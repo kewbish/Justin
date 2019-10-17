@@ -16,4 +16,5 @@ try:
         engine.say(insult)
         engine.runAndWait()
 except KeyboardInterrupt:
+    engine.stop()
     print("Creation bests its master, eh?")
