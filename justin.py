@@ -1,18 +1,42 @@
-from os import system
+import tkinter as t
+from tkinter import font
+import tkinter.ttk as ttk
+from webbrowser import open_new
 
-print("Justin is at the ready.")
-menuChoice = input("What would you like assistance with? ").lower().strip()
-if menuChoice == "newday":
-    system("python " +
-           "C:\\Users\\offic\\Downloads\\Dev\\Justin\\scripts\\new_day.py")
-elif menuChoice == "botherjustin" or menuChoice == "bother":
-    system("python " +
-           "C:\\Users\\offic\\Downloads\\Dev\\Justin\\scripts\\bother.py")
-elif menuChoice == "spamstats" or menuChoice == "spam":
-    system("python " +
-           "C:\\Users\\offic\\Downloads\\Dev\\Justin\\scripts\\spam_stats.py")
-    system("python " +
-           "C:\\Users\\offic\\Downloads\\Dev\\Justin\\scripts\\clapify.py")
-else:
-    print("Ah yes, words. Can't particularly understand that one.")
-    exit(0)
+
+def open_url(url):
+    open_new(url)
+
+
+root = t.Tk()
+root.geometry("800x550")
+root.title("Justin - Here to help.")
+root.configure(background="#1e1e1e")
+
+montserrat_bold = font.Font(family="Montserrat Bold", size=50)
+montserrat_light = font.Font(family="Montserrat Light", size=20)
+underline = font.Font(family="Montserrat Light", size=20)
+underline.configure(underline=True)
+
+dash = t.Frame(root)
+dash.configure(background="#1e1e1e")
+dash.grid(padx=15, pady=10)
+
+header_title = t.Label(root, text="Justin.")
+header_title.grid(row=1, column=1)
+header_title.configure(font=montserrat_bold, background="#1e1e1e", fg="white")
+
+header_separate = ttk.Separator(root, orient="vertical")
+header_separate.grid(column=2, row=1, sticky="ns", padx=15)
+
+header_quicklinks = t.Frame(root)
+header_quicklinks.grid(column=3, row=1)
+
+header_quicklinks_gmail = t.Label(header_quicklinks, text="Gmail")
+header_quicklinks_gmail.configure(font=underline, background="#1e1e1e",
+                                  fg="white")
+header_quicklinks_gmail.pack()
+header_quicklinks_gmail.bind("<Button-1>", lambda e: open_url(
+    "https://mail.google.com"))
+
+root.mainloop()
