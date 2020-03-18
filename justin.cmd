@@ -1,3 +1,3 @@
 @ECHO OFF
 "C:\Users\offic\AppData\Local\Programs\Python\Python37\python.exe" "C:\Users\offic\Downloads\Dev\Justin\justin.py"
-PAUSE
+EXIT
