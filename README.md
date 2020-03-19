@@ -8,6 +8,7 @@ The Linux / Mac version of the DOSKEY command is `alias`. Run `alias justin='pyt
 ## Workflows and Features
 Workflows:
 - `justin socials` - opens social media
+- `justin local` - opens local information
 Features:
 - Infrastructure to support infinite workflows and commands
 - Pretty ASCII!

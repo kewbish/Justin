@@ -1,4 +1,6 @@
+from logging import debug
 from os import startfile
+from requests import get
 from subprocess import call
 from sys import argv
 from webbrowser import open_new
@@ -12,6 +14,25 @@ def socials():
     open_new("https://www.instagram.com/direct/inbox/")
     open_new("https://reddit.com/r/memes/rising")
     startfile(r"C:\Users\offic\Downloads\Dev\Tools\Shortcuts\Telegram.lnk")
+    debug("Opened socials.")
+
+
+def local():
+    call("bash -c 'curl wttr.in'")
+    cw = get("https://coronavirus-tracker-api.herokuapp.com/v2/latest").json()
+    bc = get("https://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=CA").json()
+    cor_table = [["Latest", "World", "BC"],
+                 ["Cases", cw['latest']['confirmed'],
+                 bc['locations'][0]['latest']['confirmed']],
+                 ["Deaths", cw['latest']['deaths'],
+                 bc['locations'][0]['latest']['deaths']],
+                 ["Recoveries", cw['latest']['recovered'],
+                 bc['locations'][0]['latest']['recovered']]]
+    print(SingleTable(cor_table, title="Coronavirus Updates").table)
+    call("bash -c 'cal'")
+    print("Current time is:")
+    call("time /t")
+    debug("Opened local information.")
 
 
 def help():
@@ -21,11 +42,26 @@ def help():
     _   | | | | / __| __| | '_ \
     | |__| | |_| \__ \ |_| | | | |_
     \____/ \__,_|___/\__|_|_| |_(_)\n""")
-    options = [["Program", "What it does"], [
-        "Socials", "Opens fresh social media."]]
+    options = [["Program", "What it does"],
+               ["socials", "Opens fresh social media tabs."],
+               ["local", "Bringing local information to terminal."]]
     print(SingleTable(options, title="Here to help.").table)
+    print("Usage: justin [program] [options]")
 
 
-a = argv[-1]
-print(a)
-input("Press any key to exit...")
+try:
+    if len(argv) == 1:
+        a = "help"
+    else:
+        a = argv[1].lower()
+        args = argv[2:]
+    if a == "socials":
+        socials()
+    elif a == "local":
+        local()
+    elif a == "help":
+        help()
+    else:
+        help()
+except IndexError:
+    print("Error: Usage: justin [program] [options]")
