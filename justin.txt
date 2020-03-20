@@ -1,0 +1,2 @@
+justin=python C:\Users\offic\Downloads\Dev\Justin\justin.py $*
+ls=dir
