@@ -1,4 +1,6 @@
 from dotenv import load_dotenv
+from email import message_from_string
+from imaplib import IMAP4_SSL
 from logging import debug
 from os import getenv, popen, startfile, system
 from requests import get
@@ -30,8 +32,9 @@ def local():
                   bc['locations'][0]['latest']['recovered']]]
     print("\n")
     print(SingleTable(cor_table, title="Coronavirus Updates").table)
+    print("\n")
     system("bash -c 'cal'")
-    print("\nCurrent time is:")
+    print("Current time is:")
     system("time /t")
     debug("Opened local information.")
 
@@ -61,6 +64,35 @@ def github_init():
     debug("Set up repo.")
 
 
+def dev():
+    system("code && cmd")
+    open_new("https://trello.com/b/Znkymw6w/dev")
+    debug("Opened developer workflow.")
+
+
+def email():
+    load_dotenv(r"C:\Users\offic\Downloads\Dev\Justin\files\.env")
+    em = getenv("GMAILUSER")
+    pw = getenv("GMAILPASS")
+    mail = IMAP4_SSL('imap.gmail.com')
+    mail.login(em, pw)
+    mail.select()
+    return_code, data = mail.search(None, 'UnSeen')
+    mail_ids = data[0].decode()
+    id_list = mail_ids.split()
+    first_email_id = int(id_list[0])
+    latest_email_id = int(id_list[-1])
+    for i in range(latest_email_id, first_email_id, -1):
+        typ, data = mail.fetch(str(i), '(RFC822)')
+        for response_part in data:
+            if isinstance(response_part, tuple):
+                msg = message_from_string(response_part[1].decode("utf-8"))
+                ef = msg['from']
+                es = msg['subject']
+                print(f"{ef} - {es}")
+    debug("Parsed and printed email.")
+
+
 def help():
     print(r"""       _           _   _
       | |         | | (_)
@@ -74,7 +106,8 @@ def help():
                ["local", "Bringing local information to terminal."],
                ["news", "Prints national news thru NewsAPI."],
                ["ghissues", "Notes open issues - req. auth."],
-               ["ghinit", "Prepares Git repo for use."]]
+               ["ghinit", "Prepares Git repo for use."],
+               ["dev", "Opens developer software."]]
     print(SingleTable(options, title="Here to help.").table)
     print("Usage: justin [program] [options]")
 
@@ -95,6 +128,10 @@ try:
         github_issues()
     elif a == "ghinit":
         github_init()
+    elif a == "dev":
+        dev()
+    elif a == "email":
+        email()
     elif a == "help":
         help()
     else:
