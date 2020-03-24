@@ -2,11 +2,17 @@ from dotenv import load_dotenv
 from email import message_from_string
 from imaplib import IMAP4_SSL
 from logging import debug
-from os import getenv, popen, startfile, system
+from datetime import datetime
+from os import getenv, popen, system
 from requests import get
 from sys import argv
 from webbrowser import open_new
 from terminaltables import SingleTable
+try:
+    from os import startfile
+    # Linux OSes do not allow opening lnk's
+except ImportError:
+    startfile = False
 
 
 def socials():
@@ -15,37 +21,45 @@ def socials():
     open_new("https://app.slack.com/client/TFFEQ2X61/CTUSAU05S")
     open_new("https://www.instagram.com/direct/inbox/")
     open_new("https://reddit.com/r/memes/rising")
-    startfile(r"C:\Users\offic\Downloads\Dev\Tools\Shortcuts\Telegram.lnk")
+    if startfile:
+        # If OS supports startfile
+        startfile(r"C:\Users\offic\Downloads\Dev\Tools\Shortcuts\Telegram.lnk")
     debug("Opened socials.")
 
 
 def local():
     system("bash -c 'curl wttr.in?0'")
     cw = get("https://coronavirus-tracker-api.herokuapp.com/v2/latest").json()
-    bc = get("https://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=CA").json()
-    cor_table = [["Latest", "World", "BC"],
-                 ["Cases", cw['latest']['confirmed'],
-                  bc['locations'][0]['latest']['confirmed']],
-                 ["Deaths", cw['latest']['deaths'],
-                  bc['locations'][0]['latest']['deaths']],
-                 ["Recoveries", cw['latest']['recovered'],
-                  bc['locations'][0]['latest']['recovered']]]
-    print("\n")
-    print(SingleTable(cor_table, title="Coronavirus Updates").table)
-    print("\n")
+    bc = get(f"https://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code={getenv('JUSTIN_COUNTRY_CODE', 'CA')}").json()
+    try:
+        cor_table = [["Latest", "World", "BC"],
+                     ["Cases", cw['latest']['confirmed'],
+                      bc['locations'][0]['latest']['confirmed']],
+                     ["Deaths", cw['latest']['deaths'],
+                      bc['locations'][0]['latest']['deaths']],
+                     ["Recoveries", cw['latest']['recovered'],
+                      bc['locations'][0]['latest']['recovered']]]
+        print("\n")
+        print(SingleTable(cor_table, title="Coronavirus Updates").table)
+        print("\n")
+    except (IndexError, KeyError):
+        print("Couldn't get Coronavirus updates for your country {}".format(getenv('JUSTIN_COUNTRY_CODE')))
     system("bash -c 'cal'")
     print("Current time is:")
-    system("time /t")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
     debug("Opened local information.")
 
 
 def news():
     load_dotenv(r"C:\Users\offic\Downloads\Dev\Justin\files\.env")
     key = getenv("NEWSAPI")
-    news = get(f"http://newsapi.org/v2/top-headlines?country=ca&apiKey={key}").json()
-    for a in news["articles"]:
-        print(f"⚬ {a['title']} - {a['description']}")
-    print("\nNews courtesy of the NewsAPI - https://newsapi.org")
+    news = get(f"http://newsapi.org/v2/top-headlines?country={getenv('JUSTIN_COUNTRY_CODE', 'ca')}&apiKey={key}").json()
+    try:
+        for a in news["articles"]:
+            print(f"⚬ {a['title']} - {a['description']}")
+        print("\nNews courtesy of the NewsAPI - https://newsapi.org")
+    except (IndexError, KeyError):
+        print("Couldn't get the news for country {}".format(getenv('JUSTIN_COUNTRY_CODE')))
     debug("Printed news to terminal.")
 
 
