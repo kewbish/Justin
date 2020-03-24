@@ -43,7 +43,7 @@ def local():
     print("\n")
     system("bash -c 'cal'")
     print("Current time is:")
-    system("time /t")
+    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
     debug("Opened local information.")
 
 
