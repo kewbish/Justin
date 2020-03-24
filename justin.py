@@ -53,7 +53,7 @@ def local():
 def news():
     load_dotenv(r"C:\Users\offic\Downloads\Dev\Justin\files\.env")
     key = getenv("NEWSAPI")
-    news = get(f"http://newsapi.org/v2/top-headlines?country=ca&apiKey={key}").json()
+    news = get(f"http://newsapi.org/v2/top-headlines?country={getenv('JUSTIN_COUNTRY_CODE', 'ca')}&apiKey={key}").json()
     for a in news["articles"]:
         print(f"⚬ {a['title']} - {a['description']}")
     print("\nNews courtesy of the NewsAPI - https://newsapi.org")
