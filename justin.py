@@ -30,17 +30,20 @@ def socials():
 def local():
     system("bash -c 'curl wttr.in?0'")
     cw = get("https://coronavirus-tracker-api.herokuapp.com/v2/latest").json()
-    bc = get("https://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=CA").json()
-    cor_table = [["Latest", "World", "BC"],
-                 ["Cases", cw['latest']['confirmed'],
-                  bc['locations'][0]['latest']['confirmed']],
-                 ["Deaths", cw['latest']['deaths'],
-                  bc['locations'][0]['latest']['deaths']],
-                 ["Recoveries", cw['latest']['recovered'],
-                  bc['locations'][0]['latest']['recovered']]]
-    print("\n")
-    print(SingleTable(cor_table, title="Coronavirus Updates").table)
-    print("\n")
+    bc = get(f"https://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code={getenv('JUSTIN_COUNTRY_CODE', 'CA')}").json()
+    try:
+        cor_table = [["Latest", "World", "BC"],
+                     ["Cases", cw['latest']['confirmed'],
+                      bc['locations'][0]['latest']['confirmed']],
+                     ["Deaths", cw['latest']['deaths'],
+                      bc['locations'][0]['latest']['deaths']],
+                     ["Recoveries", cw['latest']['recovered'],
+                      bc['locations'][0]['latest']['recovered']]]
+        print("\n")
+        print(SingleTable(cor_table, title="Coronavirus Updates").table)
+        print("\n")
+    except IndexError:
+        print("Couldn't get Coronavirus updates for your country {}".format(getenv('JUSTIN_COUNTRY_CODE')))
     system("bash -c 'cal'")
     print("Current time is:")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
