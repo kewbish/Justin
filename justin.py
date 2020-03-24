@@ -2,11 +2,17 @@ from dotenv import load_dotenv
 from email import message_from_string
 from imaplib import IMAP4_SSL
 from logging import debug
-from os import getenv, popen, startfile, system
+from datetime import datetime
+from os import getenv, popen, system
 from requests import get
 from sys import argv
 from webbrowser import open_new
 from terminaltables import SingleTable
+try:
+    from os import startfile
+    # Linux OSes do not allow opening lnk's
+except ImportError:
+    startfile = False
 
 
 def socials():
@@ -15,7 +21,9 @@ def socials():
     open_new("https://app.slack.com/client/TFFEQ2X61/CTUSAU05S")
     open_new("https://www.instagram.com/direct/inbox/")
     open_new("https://reddit.com/r/memes/rising")
-    startfile(r"C:\Users\offic\Downloads\Dev\Tools\Shortcuts\Telegram.lnk")
+    if startfile:
+        # If OS supports startfile
+        startfile(r"C:\Users\offic\Downloads\Dev\Tools\Shortcuts\Telegram.lnk")
     debug("Opened socials.")
 
 
