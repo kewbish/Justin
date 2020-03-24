@@ -42,7 +42,7 @@ def local():
         print("\n")
         print(SingleTable(cor_table, title="Coronavirus Updates").table)
         print("\n")
-    except IndexError:
+    except (IndexError, KeyError):
         print("Couldn't get Coronavirus updates for your country {}".format(getenv('JUSTIN_COUNTRY_CODE')))
     system("bash -c 'cal'")
     print("Current time is:")
@@ -54,9 +54,12 @@ def news():
     load_dotenv(r"C:\Users\offic\Downloads\Dev\Justin\files\.env")
     key = getenv("NEWSAPI")
     news = get(f"http://newsapi.org/v2/top-headlines?country={getenv('JUSTIN_COUNTRY_CODE', 'ca')}&apiKey={key}").json()
-    for a in news["articles"]:
-        print(f"⚬ {a['title']} - {a['description']}")
-    print("\nNews courtesy of the NewsAPI - https://newsapi.org")
+    try:
+        for a in news["articles"]:
+            print(f"⚬ {a['title']} - {a['description']}")
+        print("\nNews courtesy of the NewsAPI - https://newsapi.org")
+    except (IndexError, KeyError):
+        print("Couldn't get the news for country {}".format(getenv('JUSTIN_COUNTRY_CODE')))
     debug("Printed news to terminal.")
 
 
