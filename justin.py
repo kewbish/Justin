@@ -3,16 +3,16 @@ from email import message_from_string
 from imaplib import IMAP4_SSL
 from logging import debug
 from datetime import datetime
-from os import getenv, popen, system
+from os import getenv, system, getcwd
 from requests import get
 from sys import argv
 from webbrowser import open_new
 from terminaltables import SingleTable
-try:
+
+try:  # catches OS-specific errors
     from os import startfile
-    # Linux OSes do not allow opening lnk's
 except ImportError:
-    startfile = False
+    posix = true
 
 
 def socials():
@@ -21,8 +21,7 @@ def socials():
     open_new("https://app.slack.com/client/TFFEQ2X61/CTUSAU05S")
     open_new("https://www.instagram.com/direct/inbox/")
     open_new("https://reddit.com/r/memes/rising")
-    if startfile:
-        # If OS supports startfile
+    if not posix:
         startfile(r"C:\Users\offic\Downloads\Dev\Tools\Shortcuts\Telegram.lnk")
     debug("Opened socials.")
 
@@ -30,20 +29,11 @@ def socials():
 def local():
     system("bash -c 'curl wttr.in?0'")
     cw = get("https://coronavirus-tracker-api.herokuapp.com/v2/latest").json()
-    bc = get(f"https://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code={getenv('JUSTIN_COUNTRY_CODE', 'CA')}").json()
-    try:
-        cor_table = [["Latest", "World", "BC"],
-                     ["Cases", cw['latest']['confirmed'],
-                      bc['locations'][0]['latest']['confirmed']],
-                     ["Deaths", cw['latest']['deaths'],
-                      bc['locations'][0]['latest']['deaths']],
-                     ["Recoveries", cw['latest']['recovered'],
-                      bc['locations'][0]['latest']['recovered']]]
-        print("\n")
-        print(SingleTable(cor_table, title="Coronavirus Updates").table)
-        print("\n")
-    except (IndexError, KeyError):
-        print("Couldn't get Coronavirus updates for your country {}".format(getenv('JUSTIN_COUNTRY_CODE')))
+    cor_table = [["Latest", "World"],
+                    ["Cases", cw['latest']['confirmed']],
+                    ["Deaths", cw['latest']['deaths']],
+                    ["Recoveries", cw['latest']['recovered']]]
+    print(SingleTable(cor_table, title="COVID-19 Updates").table)
     system("bash -c 'cal'")
     print("Current time is:")
     print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
@@ -53,13 +43,14 @@ def local():
 def news():
     load_dotenv(r"C:\Users\offic\Downloads\Dev\Justin\files\.env")
     key = getenv("NEWSAPI")
-    news = get(f"http://newsapi.org/v2/top-headlines?country={getenv('JUSTIN_COUNTRY_CODE', 'ca')}&apiKey={key}").json()
+    country = getenv("COUNTRYCODE", "ca")
+    news = get(f"http://newsapi.org/v2/top-headlines?country={country}&apiKey={key}").json()
     try:
         for a in news["articles"]:
             print(f"⚬ {a['title']} - {a['description']}")
         print("\nNews courtesy of the NewsAPI - https://newsapi.org")
     except (IndexError, KeyError):
-        print("Couldn't get the news for country {}".format(getenv('JUSTIN_COUNTRY_CODE')))
+        print(f"Couldn't retrieve for country {country}")
     debug("Printed news to terminal.")
 
 
@@ -107,6 +98,71 @@ def email():
     debug("Parsed and printed email.")
 
 
+def hugo_init():
+    gh_repo_name = argv[2]
+    if not posix:
+        with open("deploy-blog.bat", "w") as x:
+            x.write(
+                """
+                @echo off
+                echo Committing to master.
+                git checkout master
+                git add --all && git commit -m %1
+                git push origin --all
+                echo Deleting old publication.
+                rd /s /q public
+                mkdir public
+                git worktree prune
+                rd /s /q .git/worktrees/public/
+                echo Editing worktree.
+                git worktree add -B gh-pages public origin/gh-pages
+                echo Generating site.
+                hugo --buildFuture
+                cd public && git add --all && git commit -m %1
+                git push origin --all
+                cd ..
+                """)
+    else:
+        with open("deploy-blog.sh", "w") as x:
+            x.write(
+                """
+                @echo off
+                echo Committing to master.
+                git checkout master
+                git add --all && git commit -m %1
+                git push origin --all
+                echo "Deleting old publication."
+                rm -rf public
+                mkdir public
+                git worktree prune
+                rm -rf .git/worktrees/public/
+                echo "Cleaning up."
+                git worktree add -B gh-pages public upstream/gh-pages
+                rm -rf public/*
+                echo "Publishing site."
+                hugo
+                cd public && git add --all && git commit -m $1
+                git push --all
+                """)
+    system(f"hugo new site {getcwd()} && hugo new theme")
+    with open("README.md", "w") as x:
+        x.write(f"# {gh_repo_name}  \nCreated by Kewbish.")
+    if not posix:
+        system("del config.toml")
+    else:
+        system("rm ./config.toml")
+    with open("config.yml", "w") as x:
+        x.write(f"""
+        baseURL: "/"
+        languageCode: "en-us"
+        title: "{gh_repo_name}""
+        theme: "{gh_repo_name}"
+        disableKinds: ["taxonomy", "taxonomyTerm"]
+        relativeURLs: true
+        """)
+    debug("Set up Hugo site.")
+
+
 def help():
     print(r"""       _           _   _
       | |         | | (_)
@@ -121,7 +177,9 @@ def help():
                ["news", "Prints national news thru NewsAPI."],
                ["ghissues", "Notes open issues - req. auth."],
                ["ghinit", "Prepares Git repo for use."],
-               ["dev", "Opens developer software."]]
+               ["dev", "Opens developer software."],
+               ["emails", "Opens unread email."],
+               ["hginit", "Prepares Hugo site."]]
     print(SingleTable(options, title="Here to help.").table)
     print("Usage: justin [program] [options]")
 
@@ -146,6 +204,8 @@ try:
         dev()
     elif a == "email":
         email()
+    elif a == "hginit":
+        hugo_init()
     elif a == "help":
         help()
     else:
