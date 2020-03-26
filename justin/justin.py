@@ -10,14 +10,31 @@ from requests import get
 from sys import argv
 from webbrowser import open_new
 from terminaltables import SingleTable
+from justin.platform.platform import System
+from justin.config import ConfigManager
 
 try:  # catches OS-specific errors
     from os import startfile
 except ImportError:
-    posix = True
+    pass
 
 
-def socials():
+class Justin:
+    def __init__(self):
+        self.cfgmgr = ConfigManager()
+        self.config = self.cfgmgr.get_config()
+        self.platform = System()
+        self.commands = {
+            'socials': [self.socials, "Opens fresh social media tabs."],
+            'local': [self.local, "Bringing local information to terminal."],
+            'news': [self.news, "Prints national news thru NewsAPI."],
+            'ghissues': [self.github_issues, "Notes open issues - req. auth."],
+            'ghinit': [self.github_init, "Prepares Git repo for use."],
+            'dev': [self.dev, "Opens developer software."],
+            'emails': [self.email, "Opens unread email."],
+            'hginit': [self.hugo_init, "Prepares Hugo site."],
+            'changevar': [self.changevar, "Change a variable"]
+        }
     open_new("https://mail.google.com/mail/u/0")
     open_new("https://discordapp.com/channels/@me")
     open_new("https://app.slack.com/client/TFFEQ2X61/CTUSAU05S")
