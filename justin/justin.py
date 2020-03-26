@@ -65,19 +65,17 @@ class Justin:
         debug("Opened local information.")
 
     def news(self):
-def news():
-    load_dotenv(r"C:\Users\offic\Downloads\Dev\Justin\files\.env")
-    key = getenv("NEWSAPI")
-    country = getenv("COUNTRYCODE", "ca")
-    news = get(
-        f"http://newsapi.org/v2/top-headlines?country={country}&apiKey={key}").json()
-    try:
-        for a in news["articles"]:
-            print(f"⚬ {a['title']} - {a['description']}")
-        print("\nNews courtesy of the NewsAPI - https://newsapi.org")
-    except (IndexError, KeyError):
-        print(f"Couldn't retrieve for country {country}")
-    debug("Printed news to terminal.")
+        key = self.config.get('newsapi_token')
+        country = self.config.get('country', 'ca')
+        news = get(
+            f"http://newsapi.org/v2/top-headlines?country={country}&apiKey={key}").json()
+        try:
+            for a in news["articles"]:
+                print(f"⚬ {a['title']} - {a['description']}")
+            print("\nNews courtesy of the NewsAPI - https://newsapi.org")
+        except (IndexError, KeyError):
+            print(f"Couldn't retrieve for country {country}")
+        debug("Printed news to terminal.")
 
 
 def github_issues():
