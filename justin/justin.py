@@ -1,9 +1,11 @@
 import sys
+from getpass import getpass
 from email import message_from_string
 from imaplib import IMAP4_SSL
 from logging import debug
 from datetime import datetime
 from os import getenv, system, getcwd
+from subprocess import Popen, PIPE
 from requests import get
 from sys import argv
 from webbrowser import open_new
