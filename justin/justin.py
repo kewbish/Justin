@@ -92,11 +92,21 @@ class Justin:
         system("git add . && github")
         debug("Set up repo.")
 
-
-def dev():
-    system("code && cmd")
-    open_new("https://trello.com/b/Znkymw6w/dev")
-    debug("Opened developer workflow.")
+    def dev(self):
+        Popen("{ide}".format(
+            ide=self.config.get(
+                'name_of_your_IDE',
+                'notepad.exe' if self.platform.system() == 'Windows' else 'nano'  # specify default for MacOS also
+            )
+        ), shell=True)
+        Popen("{sh}".format(
+            sh=self.config.get(
+                'name_of_your_terminal_app',
+                'cmd.exe' if self.platform.system() == 'Windows' else 'bash'
+            )
+        ), shell=True)
+        open_new("https://trello.com/b/Znkymw6w/dev")
+        debug("Opened developer workflow.")
 
 
 def email():
