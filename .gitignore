@@ -1,1 +1,10 @@
 */.env
+.env
+.idea
+.code
+.vscode
+*.pyc
+*.pyo
+__pycache__
+
+
