@@ -77,11 +77,11 @@ class Justin:
             print(f"Couldn't retrieve for country {country}")
         debug("Printed news to terminal.")
 
-
-def github_issues():
-    print("Currently, these are the issues you have open.")
-    system("bash -c 'curl -u 'kewbish' https://api.github.com/issues'")
-    debug("Opened issues.")
+    def github_issues(self):
+        print("Currently, these are the issues you have open.")
+        system("bash -c 'curl -u '{username}' https://api.github.com/issues'"
+               .format(username=self.config.get('github_username')))  # TODO: Pretty output
+        debug("Opened issues.")
 
 
 def github_init():
