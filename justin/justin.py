@@ -83,14 +83,14 @@ class Justin:
                .format(username=self.config.get('github_username')))  # TODO: Pretty output
         debug("Opened issues.")
 
-
-def github_init():
-    gh_repo_name = argv[2]
-    system("git init")
-    system(f"git remote add https://github.com/kewbish/{gh_repo_name}.git")
-    print(f"Setting up at: https://github.com/kewbish/{gh_repo_name}.git")
-    system("git add . && github")
-    debug("Set up repo.")
+    def github_init(self):
+        gh_repo_name = argv[2]
+        system("git init")
+        # FIXME global
+        system(f"git remote add https://github.com/{self.config.get('github_username')}/{gh_repo_name}.git")
+        print(f"Setting up at: https://github.com/{self.config.get('github_username')}/{gh_repo_name}.git")
+        system("git add . && github")
+        debug("Set up repo.")
 
 
 def dev():
