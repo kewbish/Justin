@@ -138,73 +138,72 @@ class Justin:
             print("Couldn't log in - check credentials.")
         debug("Parsed and printed email.")
 
-
-def hugo_init():
-    gh_repo_name = argv[2]
-    try:
-        if not posix:
-            with open("deploy-blog.bat", "w") as x:
-                x.write(
-                    """
-                    @echo off
-                    echo Committing to master.
-                    git checkout master
-                    git add --all && git commit -m %1
-                    git push origin --all
-                    echo Deleting old publication.
-                    rd /s /q public
-                    mkdir public
-                    git worktree prune
-                    rd /s /q .git/worktrees/public/
-                    echo Editing worktree.
-                    git worktree add -B gh-pages public origin/gh-pages
-                    echo Generating site.
-                    hugo --buildFuture
-                    cd public && git add --all && git commit -m %1
-                    git push origin --all
-                    cd ..
-                    """)
-        else:
-            with open("deploy-blog.sh", "w") as x:
-                x.write(
-                    """
-                    @echo off
-                    echo Committing to master.
-                    git checkout master
-                    git add --all && git commit -m %1
-                    git push origin --all
-                    echo "Deleting old publication."
-                    rm -rf public
-                    mkdir public
-                    git worktree prune
-                    rm -rf .git/worktrees/public/
-                    echo "Cleaning up."
-                    git worktree add -B gh-pages public upstream/gh-pages
-                    rm -rf public/*
-                    echo "Publishing site."
-                    hugo
-                    cd public && git add --all && git commit -m $1
-                    git push --all
-                    """)
-        system(f"hugo new site {getcwd()} && hugo new theme")
-        with open("README.md", "w") as x:
-            x.write(f"# {gh_repo_name}  \nCreated by Kewbish.")
-        if not posix:
-            system("del config.toml")
-        else:
-            system("rm ./config.toml")
-        with open("config.yml", "w") as x:
-            x.write(f"""
-            baseURL: "/"
-            languageCode: "en-us"
-            title: "{gh_repo_name}""
-            theme: "{gh_repo_name}"
-            disableKinds: ["taxonomy", "taxonomyTerm"]
-            relativeURLs: true
-            """)
-        debug("Set up Hugo site.")
-    except:
-        print("There was an error setting up your site.")
+    def hugo_init(self):
+        gh_repo_name = argv[2]
+        try:
+            if self.platform.system() == 'Windows':
+                with open("deploy-blog.bat", "w") as x:
+                    x.write(
+                        """
+                        @echo off
+                        echo Committing to master.
+                        git checkout master
+                        git add --all && git commit -m %1
+                        git push origin --all
+                        echo Deleting old publication.
+                        rd /s /q public
+                        mkdir public
+                        git worktree prune
+                        rd /s /q .git/worktrees/public/
+                        echo Editing worktree.
+                        git worktree add -B gh-pages public origin/gh-pages
+                        echo Generating site.
+                        hugo --buildFuture
+                        cd public && git add --all && git commit -m %1
+                        git push origin --all
+                        cd ..
+                        """)
+            else:
+                with open("deploy-blog.sh", "w") as x:
+                    x.write(
+                        """
+                        @echo off
+                        echo Committing to master.
+                        git checkout master
+                        git add --all && git commit -m %1
+                        git push origin --all
+                        echo "Deleting old publication."
+                        rm -rf public
+                        mkdir public
+                        git worktree prune
+                        rm -rf .git/worktrees/public/
+                        echo "Cleaning up."
+                        git worktree add -B gh-pages public upstream/gh-pages
+                        rm -rf public/*
+                        echo "Publishing site."
+                        hugo
+                        cd public && git add --all && git commit -m $1
+                        git push --all
+                        """)
+            system(f"hugo new site {getcwd()} && hugo new theme")
+            with open("README.md", "w") as x:
+                x.write(f"# {gh_repo_name}  \nCreated by Kewbish.")
+            if self.platform.system() == 'Windows':
+                system("del config.toml")
+            else:
+                system("rm ./config.toml")
+            with open("config.yml", "w") as x:
+                x.write(f"""
+                baseURL: "/"
+                languageCode: "en-us"
+                title: "{gh_repo_name}""
+                theme: "{gh_repo_name}"
+                disableKinds: ["taxonomy", "taxonomyTerm"]
+                relativeURLs: true
+                """)
+            debug("Set up Hugo site.")
+        except Exception as e:
+            print(f"There was an error setting up your site. ErrorCode : {e}")
 
     def changevar(self):
         config_item = [x for x in self.config]
