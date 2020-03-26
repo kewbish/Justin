@@ -107,6 +107,7 @@ class Justin:
         ), shell=True)
         open_new("https://trello.com/b/Znkymw6w/dev")
         debug("Opened developer workflow.")
+        sys.exit()
 
 
 def email():
