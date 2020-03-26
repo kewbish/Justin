@@ -1,4 +1,4 @@
-from dotenv import load_dotenv
+import sys
 from email import message_from_string
 from imaplib import IMAP4_SSL
 from logging import debug
