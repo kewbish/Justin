@@ -219,25 +219,17 @@ class Justin:
         except (ValueError, KeyboardInterrupt, EOFError):
             print("\nPlease enter a valid input\n")
 
-def help():
-    print(r"""       _           _   _
-      | |         | | (_)
-      | |_   _ ___| |_ _ _ __
-  _   | | | | / __| __| | '_ \
- | |__| | |_| \__ \ |_| | | | |_
-  \____/ \__,_|___/\__|_|_| |_(_)
- """)
-    options = [["Program", "What it does"],
-               ["socials", "Opens fresh social media tabs."],
-               ["local", "Bringing local information to terminal."],
-               ["news", "Prints national news thru NewsAPI."],
-               ["ghissues", "Notes open issues - req. auth."],
-               ["ghinit", "Prepares Git repo for use."],
-               ["dev", "Opens developer software."],
-               ["emails", "Opens unread email."],
-               ["hginit", "Prepares Hugo site."]]
-    print(SingleTable(options, title="Here to help.").table)
-    print("Usage: justin [program] [options]")
+    def help(self):
+        print(r"""       _           _   _
+          | |         | | (_)
+          | |_   _ ___| |_ _ _ __
+      _   | | | | / __| __| | '_ \
+     | |__| | |_| \__ \ |_| | | | |_
+      \____/ \__,_|___/\__|_|_| |_(_)
+     """)
+        options = [["Program", "What it does"]] + [[command, self.commands[command][1]] for command in self.commands]
+        print(SingleTable(options, title="Here to help.").table)
+        print("Usage: justin [program] [options]")
 
 
 try:
