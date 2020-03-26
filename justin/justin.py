@@ -35,16 +35,22 @@ class Justin:
             'hginit': [self.hugo_init, "Prepares Hugo site."],
             'changevar': [self.changevar, "Change a variable"]
         }
-    open_new("https://mail.google.com/mail/u/0")
-    open_new("https://discordapp.com/channels/@me")
-    open_new("https://app.slack.com/client/TFFEQ2X61/CTUSAU05S")
-    open_new("https://www.instagram.com/direct/inbox/")
-    open_new("https://reddit.com/r/memes/rising")
-    if not posix:
-        startfile(r"C:\Users\offic\Downloads\Dev\Tools\Shortcuts\Telegram.lnk")
-    debug("Opened socials.")
 
+    def socials(self):
+        open_new("https://mail.google.com/mail/u/0")
+        open_new("https://discordapp.com/channels/@me")
+        open_new("https://app.slack.com/client/TFFEQ2X61/CTUSAU05S")
+        open_new("https://www.instagram.com/direct/inbox/")
+        open_new("https://reddit.com/r/memes/rising")
+        telegram_app = self.config.get('path_to_telegram')
+        if self.platform.system() == 'Windows' and telegram_app:
+            startfile(r"{}".format(telegram_app))
+        elif telegram_app:
+            proc = Popen(telegram_app, stdout=PIPE, stderr=PIPE)
+            debug(proc.stdout.read(), proc.stderr.read())
+        debug("Opened socials.")
 
+    def local(self):
 def local():
     system("bash -c 'curl wttr.in?0'")
     cw = get("https://coronavirus-tracker-api.herokuapp.com/v2/latest").json()
