@@ -109,34 +109,34 @@ class Justin:
         debug("Opened developer workflow.")
         sys.exit()
 
-
-def email():
-    load_dotenv(r"C:\Users\offic\Downloads\Dev\Justin\files\.env")
-    em = getenv("GMAILUSER")
-    pw = getenv("GMAILPASS")
-    mail = IMAP4_SSL('imap.gmail.com')
-    try:
-        mail.login(em, pw)
-        mail.select()
-        return_code, data = mail.search(None, 'UnSeen')
-        del return_code
-        mail_ids = data[0].decode()
-        id_list = mail_ids.split()
-        first_email_id = int(id_list[0])
-        latest_email_id = int(id_list[-1])
-        for i in range(latest_email_id, first_email_id, -1):
-            typ, data = mail.fetch(str(i), '(RFC822)')
-            del typ
-            for response_part in data:
-                msg = message_from_string(response_part[1].decode("utf-8"))
-                ef = msg['from']
-                es = msg['subject']
-                print(f"{ef} - {es}")
-            if not data:
-                print("Nothing to see!")
-    except:
-        print("Couldn't log in - check credentials.")
-    debug("Parsed and printed email.")
+    def email(self):
+        em = self.config.get('gmail_email_id')
+        # pw = getenv("GMAILPASS")  # FIXME: Never save passwd to env, other softwares too have access to it
+        pw = getpass()
+        print("")
+        mail = IMAP4_SSL('imap.gmail.com')
+        try:
+            mail.login(em, pw)
+            mail.select()
+            return_code, data = mail.search(None, 'UnSeen')
+            del return_code
+            mail_ids = data[0].decode()
+            id_list = mail_ids.split()
+            first_email_id = int(id_list[0])
+            latest_email_id = int(id_list[-1])
+            for i in range(latest_email_id, first_email_id, -1):
+                typ, data = mail.fetch(str(i), '(RFC822)')
+                del typ
+                for response_part in data:
+                    msg = message_from_string(response_part[1].decode("utf-8"))
+                    ef = msg['from']
+                    es = msg['subject']
+                    print(f"{ef} - {es}")
+                if not data:
+                    print("Nothing to see!")
+        except:
+            print("Couldn't log in - check credentials.")
+        debug("Parsed and printed email.")
 
 
 def hugo_init():
