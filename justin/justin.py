@@ -172,6 +172,19 @@ def hugo_init():
     except:
         print("There was an error setting up your site.")
 
+    def changevar(self):
+        config_item = [x for x in self.config]
+        for n, command in enumerate(config_item):
+            print(f"[{n+1}] {' '.join(command.split('_'))}")
+        try:
+            item = int(input("Select the number of the variable you would like to change >>> ").strip())
+            self.config[config_item[item-1]] = \
+                input(f"Enter the new value for {' '.join(config_item[item-1].split('_'))} >>> ")
+            self.cfgmgr.update_config(self.config)
+            self.cfgmgr.write_file()
+            print("Configuration updated sucessfully!")
+        except (ValueError, KeyboardInterrupt, EOFError):
+            print("\nPlease enter a valid input\n")
 
 def help():
     print(r"""       _           _   _
