@@ -241,10 +241,10 @@ class Justin:
             self.help()
 
 
-    elif a == "local":
-        local()
-    elif a == "news":
+def main():
+    jstin = Justin()
+    jstin.launcher()
 
 
-        github_issues()
-    elif a == "ghinit":
+if __name__ == '__main__':
+    main()
