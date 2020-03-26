@@ -12,7 +12,7 @@ from terminaltables import SingleTable
 try:  # catches OS-specific errors
     from os import startfile
 except ImportError:
-    posix = true
+    posix = True
 
 
 def socials():
@@ -30,9 +30,9 @@ def local():
     system("bash -c 'curl wttr.in?0'")
     cw = get("https://coronavirus-tracker-api.herokuapp.com/v2/latest").json()
     cor_table = [["Latest", "World"],
-                    ["Cases", cw['latest']['confirmed']],
-                    ["Deaths", cw['latest']['deaths']],
-                    ["Recoveries", cw['latest']['recovered']]]
+                 ["Cases", cw['latest']['confirmed']],
+                 ["Deaths", cw['latest']['deaths']],
+                 ["Recoveries", cw['latest']['recovered']]]
     print(SingleTable(cor_table, title="COVID-19 Updates").table)
     system("bash -c 'cal'")
     print("Current time is:")
@@ -44,7 +44,8 @@ def news():
     load_dotenv(r"C:\Users\offic\Downloads\Dev\Justin\files\.env")
     key = getenv("NEWSAPI")
     country = getenv("COUNTRYCODE", "ca")
-    news = get(f"http://newsapi.org/v2/top-headlines?country={country}&apiKey={key}").json()
+    news = get(
+        f"http://newsapi.org/v2/top-headlines?country={country}&apiKey={key}").json()
     try:
         for a in news["articles"]:
             print(f"⚬ {a['title']} - {a['description']}")
@@ -56,7 +57,7 @@ def news():
 
 def github_issues():
     print("Currently, these are the issues you have open.")
-    p = system("bash -c 'curl -u 'kewbish' https://api.github.com/issues'")
+    system("bash -c 'curl -u 'kewbish' https://api.github.com/issues'")
     debug("Opened issues.")
 
 
@@ -80,87 +81,96 @@ def email():
     em = getenv("GMAILUSER")
     pw = getenv("GMAILPASS")
     mail = IMAP4_SSL('imap.gmail.com')
-    mail.login(em, pw)
-    mail.select()
-    return_code, data = mail.search(None, 'UnSeen')
-    mail_ids = data[0].decode()
-    id_list = mail_ids.split()
-    first_email_id = int(id_list[0])
-    latest_email_id = int(id_list[-1])
-    for i in range(latest_email_id, first_email_id, -1):
-        typ, data = mail.fetch(str(i), '(RFC822)')
-        for response_part in data:
-            if isinstance(response_part, tuple):
+    try:
+        mail.login(em, pw)
+        mail.select()
+        return_code, data = mail.search(None, 'UnSeen')
+        del return_code
+        mail_ids = data[0].decode()
+        id_list = mail_ids.split()
+        first_email_id = int(id_list[0])
+        latest_email_id = int(id_list[-1])
+        for i in range(latest_email_id, first_email_id, -1):
+            typ, data = mail.fetch(str(i), '(RFC822)')
+            del typ
+            for response_part in data:
                 msg = message_from_string(response_part[1].decode("utf-8"))
                 ef = msg['from']
                 es = msg['subject']
                 print(f"{ef} - {es}")
+            if not data:
+                print("Nothing to see!")
+    except:
+        print("Couldn't log in - check credentials.")
     debug("Parsed and printed email.")
 
 
 def hugo_init():
     gh_repo_name = argv[2]
-    if not posix:
-        with open("deploy-blog.bat", "w") as x:
-            x.write(
-                """
-                @echo off
-                echo Committing to master.
-                git checkout master
-                git add --all && git commit -m %1
-                git push origin --all
-                echo Deleting old publication.
-                rd /s /q public
-                mkdir public
-                git worktree prune
-                rd /s /q .git/worktrees/public/
-                echo Editing worktree.
-                git worktree add -B gh-pages public origin/gh-pages
-                echo Generating site.
-                hugo --buildFuture
-                cd public && git add --all && git commit -m %1
-                git push origin --all
-                cd ..
-                """)
-    else:
-        with open("deploy-blog.sh", "w") as x:
-            x.write(
-                """
-                @echo off
-                echo Committing to master.
-                git checkout master
-                git add --all && git commit -m %1
-                git push origin --all
-                echo "Deleting old publication."
-                rm -rf public
-                mkdir public
-                git worktree prune
-                rm -rf .git/worktrees/public/
-                echo "Cleaning up."
-                git worktree add -B gh-pages public upstream/gh-pages
-                rm -rf public/*
-                echo "Publishing site."
-                hugo
-                cd public && git add --all && git commit -m $1
-                git push --all
-                """)
-    system(f"hugo new site {getcwd()} && hugo new theme")
-    with open("README.md", "w") as x:
-        x.write(f"# {gh_repo_name}  \nCreated by Kewbish.")
-    if not posix:
-        system("del config.toml")
-    else:
-        system("rm ./config.toml")
-    with open("config.yml", "w") as x:
-        x.write(f"""
-        baseURL: "/"
-        languageCode: "en-us"
-        title: "{gh_repo_name}""
-        theme: "{gh_repo_name}"
-        disableKinds: ["taxonomy", "taxonomyTerm"]
-        relativeURLs: true
-        """)
-    debug("Set up Hugo site.")
+    try:
+        if not posix:
+            with open("deploy-blog.bat", "w") as x:
+                x.write(
+                    """
+                    @echo off
+                    echo Committing to master.
+                    git checkout master
+                    git add --all && git commit -m %1
+                    git push origin --all
+                    echo Deleting old publication.
+                    rd /s /q public
+                    mkdir public
+                    git worktree prune
+                    rd /s /q .git/worktrees/public/
+                    echo Editing worktree.
+                    git worktree add -B gh-pages public origin/gh-pages
+                    echo Generating site.
+                    hugo --buildFuture
+                    cd public && git add --all && git commit -m %1
+                    git push origin --all
+                    cd ..
+                    """)
+        else:
+            with open("deploy-blog.sh", "w") as x:
+                x.write(
+                    """
+                    @echo off
+                    echo Committing to master.
+                    git checkout master
+                    git add --all && git commit -m %1
+                    git push origin --all
+                    echo "Deleting old publication."
+                    rm -rf public
+                    mkdir public
+                    git worktree prune
+                    rm -rf .git/worktrees/public/
+                    echo "Cleaning up."
+                    git worktree add -B gh-pages public upstream/gh-pages
+                    rm -rf public/*
+                    echo "Publishing site."
+                    hugo
+                    cd public && git add --all && git commit -m $1
+                    git push --all
+                    """)
+        system(f"hugo new site {getcwd()} && hugo new theme")
+        with open("README.md", "w") as x:
+            x.write(f"# {gh_repo_name}  \nCreated by Kewbish.")
+        if not posix:
+            system("del config.toml")
+        else:
+            system("rm ./config.toml")
+        with open("config.yml", "w") as x:
+            x.write(f"""
+            baseURL: "/"
+            languageCode: "en-us"
+            title: "{gh_repo_name}""
+            theme: "{gh_repo_name}"
+            disableKinds: ["taxonomy", "taxonomyTerm"]
+            relativeURLs: true
+            """)
+        debug("Set up Hugo site.")
+    except:
+        print("There was an error setting up your site.")
 
 
 def help():
@@ -202,7 +212,7 @@ try:
         github_init()
     elif a == "dev":
         dev()
-    elif a == "email":
+    elif a == "emails":
         email()
     elif a == "hginit":
         hugo_init()
