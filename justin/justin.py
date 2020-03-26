@@ -231,32 +231,20 @@ class Justin:
         print(SingleTable(options, title="Here to help.").table)
         print("Usage: justin [program] [options]")
 
+    def launcher(self):
+        for command in self.commands:
+            if command in argv:
+                self.commands[command][0]()
+                break
+        else:
+            print("Usage: justin [program] [options]")
+            self.help()
 
-try:
-    if len(argv) == 1:
-        a = "help"
-    else:
-        a = argv[1].lower()
-        args = argv[2:]
-    if a == "socials":
-        socials()
+
     elif a == "local":
         local()
     elif a == "news":
-        news()
-    elif a == "ghissues":
+
+
         github_issues()
     elif a == "ghinit":
-        github_init()
-    elif a == "dev":
-        dev()
-    elif a == "emails":
-        email()
-    elif a == "hginit":
-        hugo_init()
-    elif a == "help":
-        help()
-    else:
-        help()
-except IndexError:
-    print("Error: Usage: justin [program] [options]")
