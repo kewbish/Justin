@@ -51,20 +51,20 @@ class Justin:
         debug("Opened socials.")
 
     def local(self):
-def local():
-    system("bash -c 'curl wttr.in?0'")
-    cw = get("https://coronavirus-tracker-api.herokuapp.com/v2/latest").json()
-    cor_table = [["Latest", "World"],
-                 ["Cases", cw['latest']['confirmed']],
-                 ["Deaths", cw['latest']['deaths']],
-                 ["Recoveries", cw['latest']['recovered']]]
-    print(SingleTable(cor_table, title="COVID-19 Updates").table)
-    system("bash -c 'cal'")
-    print("Current time is:")
-    print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
-    debug("Opened local information.")
+        # FIXME: Requirements : bash is only available in WSL or MINGW. It may not work on standalone Windows
+        system("bash -c 'curl wttr.in?0'")
+        cw = get("https://coronavirus-tracker-api.herokuapp.com/v2/latest").json()
+        cor_table = [["Latest", "World"],
+                     ["Cases", cw['latest']['confirmed']],
+                     ["Deaths", cw['latest']['deaths']],
+                     ["Recoveries", cw['latest']['recovered']]]
+        print(SingleTable(cor_table, title="COVID-19 Updates").table)
+        system("bash -c 'cal'")
+        print("Current time is:")
+        print(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+        debug("Opened local information.")
 
-
+    def news(self):
 def news():
     load_dotenv(r"C:\Users\offic\Downloads\Dev\Justin\files\.env")
     key = getenv("NEWSAPI")
