@@ -9,9 +9,15 @@ Justin was created with my personal workflows in mind, and as such, many of the 
 However, please do check out the [instructions on creating a config.jstn](#configjstn).
 
 ## :wrench: Setup
-Run `justin.cmd` in Terminal after downloading the files and moving `justin.py` into the `C:\Users\offic\Downloads\Dev\Justin\` folder. Alternatively, edit the `.cmd` file.  
-You may need to place a doskey command in the startup properties of your Command Prompt. Instructions to do so can be found [here](https://superuser.com/a/1517751).  
-The Linux / Mac version of the DOSKEY command is `alias`. Run `alias justin='python \path\to\file $*'` to setup an alias for Justin.  
+Clone this repository, and download + extract the files.  
+Create a `config.jstn` file (see instructions [below](#configjstn)) and replace the file path at the bottom of the `justin.py` file.  
+`cd` into the folder, and run `python setup.py install --user` to install the project.  
+*Coming soon: uploading to PyPI when stable 1.0 is released.*
+
+### :laptop: Command Alias
+Alternatively, use `DOSKEY` (Windows) or `alias` (Linux / MacOS) to set up an alias.  
+For example, `doskey justin=python path\to\justin.py %*` (on Windows, set up in target properties).  
+Information about these can be found [for Windows](https://superuser.com/a/1517751) and [Linux / MacOS](https://askubuntu.com/a/17538).  
 
 ## :hammer_and_wrench: config.jstn
 Justin uses a custom `config.jstn` file. You can place this anywhere, just remember to update the path in the Justin class.  

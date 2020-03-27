@@ -205,6 +205,14 @@ class Justin():
         print(SingleTable(options, title="Here to help.").table)
         print("Usage: justin [program] [options]")
 
+    def justin_command(self):
+        if len(argv) == 2:
+            a = argv[1]
+        elif len(argv) == 1:
+            a = "help"
+        justin = Justin(r"C:\Users\offic\Downloads\Dev\Justin\files\config.jstn")
+        justin.runner(a)
+
 
 if __name__ == "__main__":
     if len(argv) == 2:
