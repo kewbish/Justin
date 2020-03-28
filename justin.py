@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 from datetime import datetime
-from email import message_from_string
-from imaplib import IMAP4_SSL
+from email import message_from_bytes
+from imapclient import IMAPClient
 from json import loads
 from logging import debug
 from os import system, getcwd
@@ -17,7 +17,7 @@ except ImportError:
     posix = True
 
 
-class Justin():
+class Justin:
     def __init__(self, path_to_config):
         config = ConfigParser()
         config.read(path_to_config)
@@ -46,13 +46,6 @@ class Justin():
 
     def local(self):
         system("bash -c 'curl wttr.in?0'")
-        # this feature will be removed in the near future - hopefully.
-        cw = get("https://coronavirus-tracker-api.herokuapp.com/v2/latest").json()
-        cor_table = [["Latest", "World"],
-                     ["Cases", cw['latest']['confirmed']],
-                     ["Deaths", cw['latest']['deaths']],
-                     ["Recoveries", cw['latest']['recovered']]]
-        print(SingleTable(cor_table, title="COVID-19 Updates").table)
         system("bash -c 'cal'")
         print("Current time is:")
         print(datetime.now().strftime("%d %B %Y, %H:%M:%S"))
@@ -62,7 +55,8 @@ class Justin():
         key = self.news_api_key
         ctry = self.country
         news = get(
-            f"http://newsapi.org/v2/top-headlines?country={ctry}&apiKey={key}").json()
+            f"http://newsapi.org/v2/top-headlines?country={ctry}&apiKey={key}"
+        ).json()
         try:
             for a in news["articles"]:
                 print(f"⚬ {a['title']} - {a['description']}")
@@ -94,28 +88,8 @@ class Justin():
     def emails(self):
         em = self.gmail_user
         pw = self.gmail_pass
-        mail = IMAP4_SSL('imap.gmail.com')
-        try:
-            mail.login(em, pw)
-            mail.select()
-            return_code, data = mail.search(None, 'UnSeen')
-            del return_code
-            mail_ids = data[0].decode()
-            id_list = mail_ids.split()
-            first_email_id = int(id_list[0])
-            latest_email_id = int(id_list[-1])
-            for i in range(latest_email_id, first_email_id, -1):
-                typ, data = mail.fetch(str(i), '(RFC822)')
-                del typ
-                for response_part in data:
-                    msg = message_from_string(response_part[1].decode("utf-8"))
-                    ef = msg['from']
-                    es = msg['subject']
-                    print(f"{ef} - {es}")
-                if not data:
-                    print("Nothing to see!")
-        except:
-            print("Couldn't log in - check credentials.")
+        mail = IMAPClient("imap.gmail.com")
+        print("Currently - I'm reimplementing this function. Check back later!")
         debug("Parsed and printed email.")
 
     def hginit(self):
@@ -142,7 +116,8 @@ class Justin():
                         cd public && git add --all && git commit -m %1
                         git push origin --all
                         cd ..
-                        """)
+                        """
+                    )
             else:
                 with open("deploy-blog.sh", "w") as x:
                     x.write(
@@ -164,7 +139,8 @@ class Justin():
                         hugo
                         cd public && git add --all && git commit -m $1
                         git push --all
-                        """)
+                        """
+                    )
             system(f"hugo new site {getcwd()} && hugo new theme")
             with open("README.md", "w") as x:
                 x.write(f"# {gh_repo_name}  \nCreated by Kewbish.")
@@ -173,35 +149,47 @@ class Justin():
             else:
                 system("rm ./config.toml")
             with open("config.yml", "w") as x:
-                x.write(f"""
+                x.write(
+                    f"""
                 baseURL: "/"
                 languageCode: "en-us"
                 title: "{gh_repo_name}""
                 theme: "{gh_repo_name}"
                 disableKinds: ["taxonomy", "taxonomyTerm"]
                 relativeURLs: true
-                """)
+                """
+                )
             debug("Set up Hugo site.")
         except:
             print("There was an error setting up your site.")
 
+    def internet(self):
+        system("bash -c 'curl http://ipecho.net/plain'")
+        system("bash -c 'speedtest-cli --simple'")
+        debug("Checked internet options.")
+
     def help(self):
-        print(r"""       _           _   _
-        | |         | | (_)
-        | |_   _ ___| |_ _ _ __
-    _   | | | | / __| __| | '_ \
-    | |__| | |_| \__ \ |_| | | | |_
-    \____/ \__,_|___/\__|_|_| |_(_)
-    """)
-        options = [["Program", "What it does"],
-                   ["socials", "Opens fresh social media tabs."],
-                   ["local", "Bringing local information to terminal."],
-                   ["news", "Prints national news thru NewsAPI."],
-                   ["ghissues", "Notes open issues - req. auth."],
-                   ["ghinit", "Prepares Git repo for use."],
-                   ["dev", "Opens developer software."],
-                   ["emails", "Opens unread email."],
-                   ["hginit", "Prepares Hugo site."]]
+        print(
+            r"""             _           _   _
+            | |         | | (_)
+            | |_   _ ___| |_ _ _ __
+        _   | | | | / __| __| | '_ \
+       | |__| | |_| \__ \ |_| | | | |_
+        \____/ \__,_|___/\__|_|_| |_(_)
+    """
+        )
+        options = [
+            ["Program", "What it does"],
+            ["socials", "Opens fresh social media tabs."],
+            ["local", "Bringing local information to terminal."],
+            ["news", "Prints national news thru NewsAPI."],
+            ["ghissues", "Notes open issues - req. auth."],
+            ["ghinit", "Prepares Git repo for use."],
+            ["dev", "Opens developer software."],
+            ["emails", "Opens unread email."],
+            ["hginit", "Prepares Hugo site."],
+            ["internet", "Prints IP and checks speed."],
+        ]
         print(SingleTable(options, title="Here to help.").table)
         print("Usage: justin [program] [options]")
 

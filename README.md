@@ -14,7 +14,7 @@ Create a `config.jstn` file (see instructions [below](#configjstn)) and replace 
 `cd` into the folder, and run `python setup.py install --user` to install the project.  
 *Coming soon: uploading to PyPI when stable 1.0 is released.*
 
-### :laptop: Command Alias
+### :computer: Command Alias
 Alternatively, use `DOSKEY` (Windows) or `alias` (Linux / MacOS) to set up an alias.  
 For example, `doskey justin=python path\to\justin.py %*` (on Windows, set up in target properties).  
 Information about these can be found [for Windows](https://superuser.com/a/1517751) and [Linux / MacOS](https://askubuntu.com/a/17538).  
@@ -55,6 +55,7 @@ Workflows:
 - `justin dev` - opens developer workflow
 - `justin emails` - opens summaries of unread emails
 - `justin hginit` - prepares a Hugo site  
+- `justin internet` - prints IP and checks internet speed
 
 ## :handshake: Contributors
 Thanks to the following for their work!  
