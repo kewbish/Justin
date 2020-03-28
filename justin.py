@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 from datetime import datetime
 from email import message_from_bytes
-from imapclient import IMAPClient
+from imaplib import IMAP4_SSL
 from json import loads
 from logging import debug
 from os import system, getcwd
@@ -73,12 +73,15 @@ class Justin:
 
     def ghinit(self):
         usr = self.github_user
-        gh_repo_name = argv[2]
-        system("git init")
-        system(f"git remote add https://github.com/{usr}/{gh_repo_name}.git")
-        print(f"Setting up at: https://github.com/{usr}/{gh_repo_name}.git")
-        system("git add . && github")
-        debug("Set up repo.")
+        try:
+            gh_repo = argv[2]
+            system("git init")
+            system(f"git remote add https://github.com/{usr}/{gh_repo}.git")
+            print(f"Setting up at: https://github.com/{usr}/{gh_repo}.git")
+            system("git add . && github")
+            debug("Set up repo.")
+        except IndexError:
+            print("Please provide a GitHub repo.")
 
     def dev(self):
         system(f"{self.ide}")
@@ -88,13 +91,23 @@ class Justin:
     def emails(self):
         em = self.gmail_user
         pw = self.gmail_pass
-        mail = IMAPClient("imap.gmail.com")
-        print("Currently - I'm reimplementing this function. Check back later!")
+        mail = IMAP4_SSL("imap.gmail.com")
+        mail.login(em, pw)
+        mail.select("inbox")
+        typ, data = mail.search(None, "UNSEEN")
+        del typ
+        for x in reversed(data[0].split()):
+            ty, dat = mail.fetch(x, "(RFC822)")
+            mess = message_from_bytes(dat[0][1])
+            print(f"{mess.get('from')} - {mess.get('subject')}")
+            del ty
+        mail.close()
+        mail.logout()
         debug("Parsed and printed email.")
 
     def hginit(self):
-        gh_repo_name = argv[2]
         try:
+            gh_repo = argv[2]
             if not posix:
                 with open("deploy-blog.bat", "w") as x:
                     x.write(
@@ -143,7 +156,7 @@ class Justin:
                     )
             system(f"hugo new site {getcwd()} && hugo new theme")
             with open("README.md", "w") as x:
-                x.write(f"# {gh_repo_name}  \nCreated by Kewbish.")
+                x.write(f"# {gh_repo}  \nCreated by Kewbish.")
             if not posix:
                 system("del config.toml")
             else:
@@ -153,15 +166,15 @@ class Justin:
                     f"""
                 baseURL: "/"
                 languageCode: "en-us"
-                title: "{gh_repo_name}""
-                theme: "{gh_repo_name}"
+                title: "{gh_repo}""
+                theme: "{gh_repo}"
                 disableKinds: ["taxonomy", "taxonomyTerm"]
                 relativeURLs: true
                 """
                 )
             debug("Set up Hugo site.")
-        except:
-            print("There was an error setting up your site.")
+        except IndexError:
+            print("There was an error, please check GitHub repo provided.")
 
     def internet(self):
         system("bash -c 'curl http://ipecho.net/plain'")
@@ -184,10 +197,10 @@ class Justin:
             ["local", "Bringing local information to terminal."],
             ["news", "Prints national news thru NewsAPI."],
             ["ghissues", "Notes open issues - req. auth."],
-            ["ghinit", "Prepares Git repo for use."],
+            ["ghinit", "Prepares Git repo for use. - req. GH repo name"],
             ["dev", "Opens developer software."],
             ["emails", "Opens unread email."],
-            ["hginit", "Prepares Hugo site."],
+            ["hginit", "Prepares Hugo site.- req. GH repo name"],
             ["internet", "Prints IP and checks speed."],
         ]
         print(SingleTable(options, title="Here to help.").table)

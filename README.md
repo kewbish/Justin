@@ -51,10 +51,10 @@ Workflows:
 - `justin local` - opens local information
 - `justin news` - opens top national headlines - thanks [NewsAPI](https://newsapi.org)
 - `justin ghissues` - opens currently-open issues assigned to me
-- `justin ghinit` - prepares a folder for developing
+- `justin ghinit repo_name` - prepares a folder for developing, takes a GitHub repo name as a parameter
 - `justin dev` - opens developer workflow
 - `justin emails` - opens summaries of unread emails
-- `justin hginit` - prepares a Hugo site  
+- `justin hginit repo_name` - prepares a Hugo site, takes a GitHub repo name as a parameter  
 - `justin internet` - prints IP and checks internet speed
 
 ## :handshake: Contributors
