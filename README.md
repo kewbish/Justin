@@ -10,12 +10,18 @@ However, please do check out the [instructions on creating a config.jstn](#confi
 
 ## :wrench: Setup
 Clone this repository, and download + extract the files.  
-Create a `config.jstn` file (see instructions [below](#configjstn)) and replace the file path at the bottom of the `justin.py` file.  
-`cd` into the folder, and run `python setup.py install --user` to install the project.  
+Create a `config.jstn` file (see instructions [below](#configjstn)) and replace the file path in `justin\justin.py` in the `def jstn_command()` function.  
+```python
+def jstn_command():
+    path = r"path\to\config.jstn"
+```
+Run `pip install .` in Terminal / Command Prompt to install the project.  
+In the future, when you run `justin` in Terminal, you'll be greeted with Justin's helper interface.
 *Coming soon: uploading to PyPI when stable 1.0 is released.*
+*If you download with `pip install https://github.com/kewbish/Justin/archive/master.zip` - the file to edit can be found at `/usr/lib/[python version]/site-packages/Justin/justin/justin.py` on Linux / MacOS, and `C:\Users\[user]\AppData\Local\Programs\Python\[python version]\Lib\site-packages\justin\justin.py` on Windows.*
 
 ### :computer: Command Alias
-Alternatively, use `DOSKEY` (Windows) or `alias` (Linux / MacOS) to set up an alias.  
+Alternatively, use `DOSKEY` (Windows) or `alias` (Linux / MacOS) to set up an alias to the `justin\justin.py` file.  
 For example, `doskey justin=python path\to\justin.py %*` (on Windows, set up in target properties).  
 Information about these can be found [for Windows](https://superuser.com/a/1517751) and [Linux / MacOS](https://askubuntu.com/a/17538).  
 

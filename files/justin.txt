@@ -1,2 +1,2 @@
-justin=python C:\Users\offic\Downloads\Dev\Justin\justin.py $*
+justin=python C:\Users\offic\Downloads\Dev\Justin\justin\justin.py $*
 ls=dir

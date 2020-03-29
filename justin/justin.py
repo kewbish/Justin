@@ -1,4 +1,4 @@
-from configparser import ConfigParser
+from configparser import ConfigParser, NoSectionError, NoOptionError
 from datetime import datetime
 from email import message_from_bytes
 from imaplib import IMAP4_SSL
@@ -53,17 +53,27 @@ class Justin:
 
     def news(self):
         key = self.news_api_key
-        ctry = self.country
-        news = get(
-            f"http://newsapi.org/v2/top-headlines?country={ctry}&apiKey={key}"
-        ).json()
-        try:
-            for a in news["articles"]:
-                print(f"⚬ {a['title']} - {a['description']}")
-            print("\nNews courtesy of the NewsAPI - https://newsapi.org")
-        except (IndexError, KeyError):
-            print(f"Couldn't retrieve for country {ctry}.")
-        debug("Printed news to terminal.")
+        c = self.country
+        supported_countries = ['ar', 'au', 'at', 'be', 'br', 'bg', 'ca', 'cn',
+                               'co', 'cu', 'cz', 'eg', 'fr', 'de', 'gr', 'hk',
+                               'hu', 'in', 'id', 'ie', 'il', 'it', 'jp', 'lv',
+                               'lt', 'my', 'mx', 'ma', 'nl', 'nz', 'ng', 'no',
+                               'ph', 'pl', 'pt', 'ro', 'ru', 'sa', 'rs', 'sg',
+                               'sk', 'si', 'zk', 'kr', 'se', 'ch', 'tw', 'th',
+                               'tr', 'ae', 'ua', 'gb', 'us', 've']
+        if c in supported_countries:
+            news = get(
+                f"http://newsapi.org/v2/top-headlines?country={c}&apiKey={key}"
+            ).json()
+            try:
+                for a in news["articles"]:
+                    print(f"⚬ {a['title']} - {a['description']}")
+                print("\nNews courtesy of the NewsAPI - https://newsapi.org")
+            except (IndexError, KeyError):
+                print(f"Couldn't retrieve for country {c}.")
+            debug("Printed news to terminal.")
+        else:
+            print("Your country isn't supported by NewsAPI - sorry!")
 
     def ghissues(self):
         usr = self.github_user
@@ -206,19 +216,25 @@ class Justin:
         print(SingleTable(options, title="Here to help.").table)
         print("Usage: justin [program] [options]")
 
-    def justin_command(self):
-        if len(argv) == 2:
-            a = argv[1]
-        elif len(argv) == 1:
-            a = "help"
-        justin = Justin(r"C:\Users\offic\Downloads\Dev\Justin\files\config.jstn")
-        justin.runner(a)
 
-
-if __name__ == "__main__":
+def jstn_command():
+    path = r"C:\Users\offic\Downloads\Dev\Justin\files\config.jstn"
     if len(argv) == 2:
         a = argv[1]
     elif len(argv) == 1:
         a = "help"
-    justin = Justin(r"C:\Users\offic\Downloads\Dev\Justin\files\config.jstn")
-    justin.runner(a)
+    try:
+        with open(path) as x:
+            del x
+        justin = Justin(path)
+        justin.runner(a)
+    except FileNotFoundError:
+        print("Config file not found - please check the file path.")
+    except NoSectionError:
+        print("A config section was not found - please check configuration.")
+    except NoOptionError:
+        print("A config option was not found - please check configuration.")
+
+
+if __name__ == "__main__":
+    jstn_command()
