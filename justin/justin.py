@@ -1,10 +1,12 @@
 from configparser import ConfigParser, NoSectionError, NoOptionError
 from datetime import datetime
 from email import message_from_bytes
+from getpass import getpass
 from imaplib import IMAP4_SSL
 from json import loads
 from logging import debug
 from os import system, getcwd
+from pathlib import Path
 from requests import get
 from sys import argv
 from terminaltables import SingleTable
@@ -101,6 +103,8 @@ class Justin:
     def emails(self):
         em = self.gmail_user
         pw = self.gmail_pass
+        if pw.strip() == "":
+            pw = getpass("Please enter your password. [hidden input] ")
         mail = IMAP4_SSL("imap.gmail.com")
         mail.login(em, pw)
         mail.select("inbox")
@@ -111,6 +115,8 @@ class Justin:
             mess = message_from_bytes(dat[0][1])
             print(f"{mess.get('from')} - {mess.get('subject')}")
             del ty
+        if not data[0]:
+            print("Nothing to see!")
         mail.close()
         mail.logout()
         debug("Parsed and printed email.")
@@ -218,15 +224,15 @@ class Justin:
 
 
 def jstn_command():
-    path = r"C:\Users\offic\Downloads\Dev\Justin\files\config.jstn"
+    p = Path("C:/Users/offic/Downloads/Dev/Justin/files/config.jstn")
     if len(argv) == 2:
         a = argv[1]
     elif len(argv) == 1:
         a = "help"
     try:
-        with open(path) as x:
+        with open(p) as x:
             del x
-        justin = Justin(path)
+        justin = Justin(p)
         justin.runner(a)
     except FileNotFoundError:
         print("Config file not found - please check the file path.")
