@@ -7,7 +7,7 @@ setup(
     url="https://github.com/kewbish/Justin",
     author="kewbish",
     author_email="kewbish@gmail.com",
-    install_requires=["requests==2.23.0", "terminaltables==3.1.0"],
+    install_requires=["requests==2.31.0", "terminaltables==3.1.0"],
     packages=["justin"],
     entry_points={"console_scripts": ["justin = justin.justin:jstn_command"]},
     classifiers=[
